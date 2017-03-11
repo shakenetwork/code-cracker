@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 # functions:
 
-function IsNugetVersion3($theNugetExe) {
+function IsNugetVersion3OrAbove($theNugetExe) {
     try {
         $nugetText = . $theNugetExe | Out-String
     } catch {
@@ -10,17 +10,18 @@ function IsNugetVersion3($theNugetExe) {
     [regex]$regex = '^NuGet Version: (.*)\n'
     $match = $regex.Match($nugetText)
     $version = $match.Groups[1].Value
-    return $version.StartsWith(3)
+    Write-Host "Nuget version is $version"
+    return [System.Convert]::ToInt32($version) -ge 3
 }
 
 function Get-Nuget {
     if (gcm nuget -ErrorAction SilentlyContinue) {
-        if (IsNugetVersion3 'nuget') {
+        if (IsNugetVersion3OrAbove 'nuget') {
             Write-Host "Nuget is nuget"
             $nugetExe = 'nuget'
         } else {
             Download-Nuget
-            Write-Host "Nuget is localNuget 1"
+            Write-Host "Nuget is localNuget 1: $localNuget"
             $nugetExe = $localNuget
         }
     } else {
@@ -38,12 +39,12 @@ function Download-Nuget {
     echo 1
     if (Test-Path $localNuget) {
         echo 2
-        if (IsNugetVersion3($localNuget)) { return }
+        if (IsNugetVersion3OrAbove($localNuget)) { return }
     }
     echo 3
     if (Test-Path $tempNuget) {
         echo 4
-        if (IsNugetVersion3($tempNuget)) {
+        if (IsNugetVersion3OrAbove($tempNuget)) {
             echo 5
             cp $tempNuget $localNuget
             echo 6
