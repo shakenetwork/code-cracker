@@ -16,13 +16,16 @@ function IsNugetVersion3($theNugetExe) {
 function Get-Nuget {
     if (gcm nuget -ErrorAction SilentlyContinue) {
         if (IsNugetVersion3 'nuget') {
+            Write-Host "Nuget is nuget"
             $nugetExe = 'nuget'
         } else {
             Download-Nuget
+            Write-Host "Nuget is localNuget 1"
             $nugetExe = $localNuget
         }
     } else {
         Download-Nuget
+        Write-Host "Nuget is localNuget 2"
         $nugetExe = $localNuget
     }
 }
@@ -32,12 +35,19 @@ function Download-Nuget {
     if (!(Test-Path "$env:TEMP\codecracker\")) {
         md "$env:TEMP\codecracker\" | Out-Null
     }
+    echo 1
     if (Test-Path $localNuget) {
+        echo 2
         if (IsNugetVersion3($localNuget)) { return }
     }
+    echo 3
     if (Test-Path $tempNuget) {
+        echo 4
         if (IsNugetVersion3($tempNuget)) {
+            echo 5
             cp $tempNuget $localNuget
+            echo 6
+            echo $tempNuget
             return
         }
     }
