@@ -7,10 +7,10 @@ function IsNugetVersion3OrAbove($theNugetExe) {
     } catch {
         return false
     }
-    [regex]$regex = '^NuGet Version: (.*)\n'
+    [regex]$regex = '^NuGet Version: (\d)\.(\d).*\n'
     $match = $regex.Match($nugetText)
     $version = $match.Groups[1].Value
-    Write-Host "Nuget version is $version"
+    Write-Host "Nuget major version is $version"
     return [System.Convert]::ToInt32($version) -ge 3
 }
 
