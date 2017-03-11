@@ -18,17 +18,18 @@ function Get-Nuget {
     if (gcm nuget -ErrorAction SilentlyContinue) {
         if (IsNugetVersion3OrAbove 'nuget') {
             Write-Host "Nuget is nuget"
-            $nugetExe = 'nuget'
+            $script:nugetExe = 'nuget'
         } else {
             Download-Nuget
             Write-Host "Nuget is localNuget 1: $localNuget"
-            $nugetExe = $localNuget
+            $script:nugetExe = $localNuget
         }
     } else {
         Download-Nuget
         Write-Host "Nuget is localNuget 2"
-        $nugetExe = $localNuget
+        $script:nugetExe = $localNuget
     }
+    Write-Host "Nuget is $script:nugetExe"
 }
 
 function Download-Nuget {
@@ -59,8 +60,8 @@ function Download-Nuget {
 function Import-Psake {
     $psakeModule = "$PSScriptRoot\packages\psake.4.5.0\tools\psake.psm1"
     if ((Test-Path $psakeModule) -ne $true) {
-        Write-Host "Restoring $PSScriptRoot\.nuget with $nugetExe"
-        . "$nugetExe" restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
+        Write-Host "Restoring $PSScriptRoot\.nuget with $script:nugetExe"
+        . "$script:nugetExe" restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
     }
     Import-Module $psakeModule -force
 }
@@ -70,6 +71,7 @@ function Import-Psake {
 $localNuget = "$PSScriptRoot\.nuget\nuget.exe"
 $nugetExe = ""
 Get-Nuget
+echo 222 $nugetExe
 Import-Psake
 if ($MyInvocation.UnboundArguments.Count -ne 0) {
     . $PSScriptRoot\psake.ps1 -taskList ($MyInvocation.UnboundArguments -join " ")
