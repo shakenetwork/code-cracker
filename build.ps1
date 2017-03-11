@@ -48,6 +48,7 @@ function Download-Nuget {
 function Import-Psake {
     $psakeModule = "$PSScriptRoot\packages\psake.4.5.0\tools\psake.psm1"
     if ((Test-Path $psakeModule) -ne $true) {
+        Write-Host "Restoring $PSScriptRoot\.nuget with $nugetExe"
         . "$nugetExe" restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
     }
     Import-Module $psakeModule -force
